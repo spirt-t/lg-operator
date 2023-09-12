@@ -1,0 +1,31 @@
+service:
+  ports:
+    http: 7000
+    grpc: 7002
+  log:
+    level: INFO
+
+kubernetes:
+  service:
+    host: '10.96.0.1'
+    port: 443
+  namespace: default
+  generator:
+    label: load-generator
+    port: 8888
+
+default_resources:
+  cpu:
+    request: 1
+    limit: 2
+  memory:
+    request: 1Gi
+    limit: 2Gi
+
+cleaning:
+  old:
+    ttl: '24h'
+    enabled: true
+  completed:
+    interval: '5m'
+    enabled: true

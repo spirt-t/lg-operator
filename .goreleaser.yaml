@@ -1,0 +1,19 @@
+builds:
+  - main: ./cmd/lg-operator
+    binary: lg-operator
+
+release:
+  # Repo in which the release will be created.
+  # Default is extracted from the origin remote URL or empty if its private hosted.
+  github:
+    owner: spirt-t
+    name: lg-operator
+  # Header for the release body.
+  #
+  # Templates: allowed
+  header: "New release from ({{ .Date }})"
+#  # You can change the name of the release.
+#  #
+#  # Default: '{{.Tag}}' ('{{.PrefixedTag}}' on Pro)
+#  # Templates: allowed
+#  name_template: "{{.ProjectName}}-v{{.Version}} {{.Env.USER}}"

@@ -1,0 +1,307 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "lg-operator/lg-operator.proto",
+    "version": "version not set"
+  },
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/clear-all": {
+      "delete": {
+        "summary": "Delete all pods, services and ingresses of generators. Use carefully!",
+        "operationId": "LoadGeneratorOperatorService_ClearAll",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "tags": [
+          "LoadGeneratorOperatorService"
+        ]
+      }
+    },
+    "/v1/generators": {
+      "get": {
+        "summary": "Get list of all load-generators in cluster.",
+        "operationId": "LoadGeneratorOperatorService_GeneratorsList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/lg_operatorGeneratorsListResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "tags": [
+          "LoadGeneratorOperatorService"
+        ]
+      },
+      "delete": {
+        "summary": "Delete pod, service and ingress by load-generator name.",
+        "operationId": "LoadGeneratorOperatorService_DeleteGenerators",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/lg_operatorDeleteGeneratorsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "names",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          }
+        ],
+        "tags": [
+          "LoadGeneratorOperatorService"
+        ]
+      },
+      "post": {
+        "summary": "Create pod, service and ingress of load-generator according to the passed parameters.",
+        "operationId": "LoadGeneratorOperatorService_CreateGenerators",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/lg_operatorCreateGeneratorsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/lg_operatorCreateGeneratorsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "LoadGeneratorOperatorService"
+        ]
+      }
+    },
+    "/v1/hello": {
+      "get": {
+        "summary": "Debug entrypoint.",
+        "operationId": "LoadGeneratorOperatorService_Hello",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/lg_operatorHelloResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "tags": [
+          "LoadGeneratorOperatorService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "lg_operatorCreateGeneratorsParams": {
+      "type": "object",
+      "properties": {
+        "image": {
+          "type": "string"
+        },
+        "resources": {
+          "$ref": "#/definitions/lg_operatorResources"
+        },
+        "additional_envs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/lg_operatorEnvVar"
+          }
+        },
+        "commands": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "expose_external_ip": {
+          "type": "boolean"
+        }
+      }
+    },
+    "lg_operatorCreateGeneratorsRequest": {
+      "type": "object",
+      "properties": {
+        "parameters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/lg_operatorCreateGeneratorsParams"
+          }
+        }
+      }
+    },
+    "lg_operatorCreateGeneratorsResponse": {
+      "type": "object",
+      "properties": {
+        "load_generators": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/lg_operatorLoadGenerator"
+          }
+        }
+      }
+    },
+    "lg_operatorDeleteGeneratorsResponse": {
+      "type": "object"
+    },
+    "lg_operatorEnvVar": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "val": {
+          "type": "string"
+        }
+      }
+    },
+    "lg_operatorGeneratorsListResponse": {
+      "type": "object",
+      "properties": {
+        "load_generators": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/lg_operatorLoadGenerator"
+          }
+        }
+      }
+    },
+    "lg_operatorHelloResponse": {
+      "type": "object",
+      "properties": {
+        "hello": {
+          "type": "string"
+        }
+      }
+    },
+    "lg_operatorLoadGenerator": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "cluster_ip": {
+          "type": "string"
+        },
+        "external_ip": {
+          "type": "string"
+        },
+        "port": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "lg_operatorResource": {
+      "type": "object",
+      "properties": {
+        "limit": {
+          "type": "string"
+        },
+        "request": {
+          "type": "string"
+        }
+      }
+    },
+    "lg_operatorResources": {
+      "type": "object",
+      "properties": {
+        "memory": {
+          "$ref": "#/definitions/lg_operatorResource"
+        },
+        "cpu": {
+          "$ref": "#/definitions/lg_operatorResource"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "type_url": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "runtimeError": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string"
+        },
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

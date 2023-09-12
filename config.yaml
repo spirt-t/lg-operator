@@ -1,0 +1,34 @@
+service:
+  ports:
+    http: 7000
+    grpc: 7002
+  log:
+    level: INFO
+
+kubernetes:
+  service:
+    host: '172.16.128.1'
+    port: 443
+  namespace: default
+  timeouts:
+    create: '2m'
+    delete: '30s'
+  generator:
+    port: 8888
+    label: load-generator
+
+default_resources:
+  cpu:
+    request: 1
+    limit: 2
+  memory:
+    request: 1Gi
+    limit: 2Gi
+
+cleaning:
+  outdated:
+    ttl: '24h'
+    enabled: true
+  completed:
+    interval: '5m'
+    enabled: true

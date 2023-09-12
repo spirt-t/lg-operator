@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lg-operator-deployment
+  labels:
+    app.kubernetes.io/name: lg-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: lg-operator
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: lg-operator
+    spec:
+      serviceAccountName: lg-operator
+      containers:
+        - name: lg-operator
+          image: "spirtis/lg-operator:stable"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 7000
+              name: http
+              protocol: TCP
+            - containerPort: 7002
+              name: grpc
+              protocol: TCP
+---
+apiVersion: v1
+# Indicates this as a service
+kind: Service
+metadata:
+  # Service name
+  name: lg-operator-service
+spec:
+  type: LoadBalancer
+  selector:
+    app.kubernetes.io/name: lg-operator
+  ports:
+    - port: 80
+      protocol: TCP
+      name: http
+      targetPort: 7000
+    - port: 82
+      protocol: TCP
+      name: grpc
+      targetPort: 7002
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: lg-operator-ingress
+spec:
+  defaultBackend:
+    resource:
+      kind: Service
+      name: lg-operator-service
+
+

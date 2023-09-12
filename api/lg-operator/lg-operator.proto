@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+package lg_operator;
+
+option go_package =  "github.com/spirt-t/lg-operator/pkg/lg-operator";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+service LoadGeneratorOperatorService {
+    // Debug entrypoint.
+    rpc Hello (HelloRequest) returns (HelloResponse) {
+        option (google.api.http).get = "/v1/hello";
+    }
+
+    // Create pod, service and ingress of load-generator according to the passed parameters.
+    rpc CreateGenerators (CreateGeneratorsRequest) returns (CreateGeneratorsResponse) {
+        option (google.api.http) = {
+            post: "/v1/generators"
+            body: "*"
+        };
+    }
+
+    // Delete pod, service and ingress by load-generator name.
+    rpc DeleteGenerators (DeleteGeneratorsRequest) returns (DeleteGeneratorsResponse) {
+        option (google.api.http).delete = "/v1/generators";
+    }
+
+    // Get list of all load-generators in cluster.
+    rpc GeneratorsList (GeneratorsListRequest) returns (GeneratorsListResponse) {
+        option (google.api.http).get = "/v1/generators";
+    }
+
+    // Delete all pods, services and ingresses of generators. Use carefully!
+    rpc ClearAll (google.protobuf.Empty) returns (google.protobuf.Empty) {
+        option (google.api.http).delete = "/v1/clear-all";
+    }
+}
+
+message HelloRequest {}
+message HelloResponse {
+    string hello = 1;
+}
+
+message LoadGenerator {
+    string name = 1;
+    string cluster_ip = 2;
+    string external_ip = 3;
+    int32 port = 4;
+    string status = 5;
+}
+
+message Resources {
+    Resource memory = 1;
+    Resource cpu = 2;
+}
+
+message Resource {
+    string limit = 1;
+    string request = 2;
+}
+
+message EnvVar {
+    string name = 1;
+    string val = 2;
+}
+
+message CreateGeneratorsParams {
+    string image = 1;
+    Resources resources = 2;
+    repeated EnvVar additional_envs = 3;
+    repeated string commands = 4;
+    bool expose_external_ip = 5;
+}
+
+message CreateGeneratorsRequest {
+    repeated CreateGeneratorsParams parameters = 1;
+}
+message CreateGeneratorsResponse {
+    repeated LoadGenerator load_generators = 1;
+}
+
+message DeleteGeneratorsRequest {
+    repeated string names = 1;
+}
+message DeleteGeneratorsResponse {}
+
+message GeneratorsListRequest {}
+message GeneratorsListResponse {
+    repeated LoadGenerator load_generators = 1;
+}
